@@ -1,295 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+
+  <!-- 100% BOT / Előnézet védelem: tiltja a közösségi előnézeteket, indexelést -->
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="description" content="" />
+  <meta property="og:title" content="" />
+  <meta property="og:description" content="" />
+  <meta property="og:image" content="" />
+  <meta name="twitter:card" content="none" />
+
   <title>DM3.NET — File #001</title>
+
   <style>
-    html, body {
-      margin: 0; padding: 0;
-      height: 100%;
-      background-color: #000;
-      color: #fff;
-      font-family: monospace;
-      overflow-x: hidden;
-      overflow-y: auto; /* Ez biztosítja a scrollolhatóságot, ha szükséges */
-      position: relative;
-      z-index: 1;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-      min-height: 100%;
-      padding: 10px 0; /* Kisebb padding a szélekhez, hogy több hely maradjon */
-      box-sizing: border-box;
-    }
-    #background-glitch {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: #000;
-      color: #888;
-      font-family: monospace;
-      font-size: 14px;
-      line-height: 14px;
-      white-space: nowrap;
-      overflow: hidden;
-      user-select: none;
-      pointer-events: none;
-      opacity: 0.15;
-      transition: opacity 0.5s ease;
-      z-index: 0;
-      display: flex;
-      flex-wrap: wrap;
-      align-content: flex-start;
-    }
-    input[type="password"] {
-      padding: 0.5rem;
-      background: #111;
-      color: #fff;
-      border: 1px solid #777;
-      margin-top: 1rem;
-      font-family: monospace;
-      transition: border-color 0.3s ease;
-      position: relative;
-      z-index: 2;
-    }
-    input[type="password"].shake {
-      animation: shake 0.5s ease;
-      border-color: #0ff;
-      outline: none;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); box-shadow: none; }
-      20%, 60% { transform: translateX(-8px); box-shadow: 0 0 8px #0ff; }
-      40%, 80% { transform: translateX(8px); box-shadow: 0 0 8px #0ff; }
-    }
-    button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      background: #fff;
-      color: #000;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-      z-index: 2;
-    }
-    button:hover {
-      background: #0ff;
-      color: #000;
-      box-shadow: 0 0 10px #0ff;
-    }
-
-    #login {
-      transition: opacity 1s ease, transform 1s ease;
-      z-index: 2;
-    }
-
-    #login.hide {
-      opacity: 0;
-      transform: translateY(-50px);
-      pointer-events: none;
-    }
-
-    #content {
-      display: none;
-      text-align: center;
-      opacity: 0;
-      transform: scale(0.95);
-      transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out, filter 0.8s ease-in-out;
-      position: relative;
-      z-index: 2;
-    }
-
-    #content.glitch-in {
-        display: block;
-        opacity: 0;
-        filter: blur(20px);
-        transform: scale(0.8);
-    }
-
-    #content.show {
-        display: block;
-        opacity: 1;
-        transform: scale(1);
-        filter: blur(0);
-    }
-
-    #content img {
-      max-width: 95vw;
-      /* Kép maximális magassága, hogy a szegély is látszódjon */
-      max-height: 85vh; /* Optimalizáltam a magasságot */
-      object-fit: contain;
-      border: 2px solid #fff;
-      box-shadow: 0 0 20px #fff;
-      filter: blur(8px);
-      opacity: 0;
-      transition: opacity 1.2s ease, filter 1.2s ease;
-      position: relative;
-      z-index: 2;
-    }
-    #content.glitch-in img {
-        filter: blur(8px);
-        opacity: 0;
-    }
-
-    #content.show img {
-        opacity: 1;
-        filter: blur(0);
-    }
-    h1, p {
-      text-align: center;
-      position: relative;
-      z-index: 2;
-    }
-    /* Csökkentettem a welcome szövegek margóit, hogy több hely legyen */
-    p#welcome-text-1 {
-        margin-top: 15px;
-    }
-    p#welcome-text-2 {
-        margin-top: 5px;
-    }
-
-    #sidebar-text {
-      position: fixed;
-      top: 1rem;
-      right: 2rem;
-      color: #fff;
-      font-family: monospace;
-      text-align: right;
-      user-select: none;
-      pointer-events: none;
-      max-width: 300px;
-      white-space: nowrap;
-      z-index: 2;
-    }
-    #sidebar-text h2 {
-      margin: 0;
-      font-size: 2.6rem;
-      letter-spacing: 0.15em;
-      text-shadow:
-        0 0 10px #fff,
-        0 0 20px #fff,
-        0 0 30px #fff;
-      color: #fff;
-    }
-    #sidebar-text p {
-      margin: 0;
-      font-size: 1.5rem;
-      opacity: 0.9;
-      letter-spacing: 0.25em;
-      text-shadow:
-        0 0 7px #fff,
-        0 0 14px #fff,
-        0 0 21px #fff;
-      color: #fff;
-    }
-
-    /* Monokróm gombok stílusa */
-    .social-button {
-        background: #333 !important;
-        color: #fff !important;
-        border: 1px solid #777 !important;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-family: monospace;
-        font-weight: bold;
-        border-radius: 5px;
-        transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        text-transform: uppercase;
-        white-space: nowrap; /* A gombok ne törjenek sorba a szöveg miatt */
-    }
-    .social-button:hover {
-        background: #0ff !important;
-        color: #000 !important;
-        box-shadow: 0 0 10px #0ff !important;
-        border-color: #0ff !important;
-    }
-
-    /* A gombokat tartalmazó div stílusa */
-    #content > div {
-        margin-top: 15px; /* Csökkentettem a margót itt is */
-        display: flex;
-        flex-direction: row; /* Egymás mellé rendezés MINDIG! */
-        gap: 15px; /* Csökkentettem a gombok közötti távolságot */
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap; /* Ha túl keskeny, akkor törjön sort */
-    }
-
-
-    /* --- Responsive Styles for Mobile Devices --- */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 1.5rem;
-        margin: 0 1rem;
-      }
-
-      p {
-        font-size: 0.9rem;
-        margin: 0 1rem;
-      }
-
-      input[type="password"] {
-        width: 80%;
-        max-width: 300px;
-        box-sizing: border-box;
-      }
-
-      #sidebar-text {
-        position: static;
-        text-align: center;
-        margin-top: 2rem;
-        right: auto;
-        max-width: 100%;
-      }
-
-      #sidebar-text h2 {
-        font-size: 1.8rem;
-      }
-
-      #sidebar-text p {
-        font-size: 1.2rem;
-      }
-
-      #content img {
-        max-width: 95vw;
-        max-height: 75vh; /* Optimalizáltam mobilra is a képméretet */
-      }
-      /* A gombok mobil nézetben is egymás mellett maradnak (nincs felülírás) */
+    body,html{margin:0;padding:0;height:100%;background-color:#000;color:#fff;font-family:monospace;overflow-x:hidden;overflow-y:auto;position:relative;z-index:1}
+    body{display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;z-index:1;min-height:100%;padding:10px 0;box-sizing:border-box}
+    #background-glitch{position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:#000;color:#888;font-family:monospace;font-size:14px;line-height:14px;white-space:nowrap;overflow:hidden;user-select:none;pointer-events:none;opacity:.15;transition:opacity .5s ease;z-index:0;display:flex;flex-wrap:wrap;align-content:flex-start}
+    input[type=password]{padding:.5rem;background:#111;color:#fff;border:1px solid #777;margin-top:1rem;font-family:monospace;transition:border-color .3s ease;position:relative;z-index:2}
+    input[type=password].shake{animation:shake .5s ease;border-color:#0ff;outline:0}
+    @keyframes shake{0%,100%{transform:translateX(0);box-shadow:none}20%,60%{transform:translateX(-8px);box-shadow:0 0 8px #0ff}40%,80%{transform:translateX(8px);box-shadow:0 0 8px #0ff}}
+    button{margin-top:1rem;padding:.5rem 1rem;background:#fff;color:#000;border:none;cursor:pointer;font-weight:700;transition:background .3s ease,color .3s ease,box-shadow .3s ease;position:relative;z-index:2}
+    button:hover{background:#0ff;color:#000;box-shadow:0 0 10px #0ff}
+    #login{transition:opacity 1s ease,transform 1s ease;z-index:2}
+    #login.hide{opacity:0;transform:translateY(-50px);pointer-events:none}
+    #content{display:none;text-align:center;opacity:0;transform:scale(.95);transition:opacity .8s ease-in-out,transform .8s ease-in-out,filter .8s ease-in-out;position:relative;z-index:2}
+    #content.glitch-in{display:block;opacity:0;filter:blur(20px);transform:scale(.8)}
+    #content.show{display:block;opacity:1;transform:scale(1);filter:blur(0)}
+    #content img{max-width:95vw;max-height:85vh;object-fit:contain;border:2px solid #fff;box-shadow:0 0 20px #fff;filter:blur(8px);opacity:0;transition:opacity 1.2s ease,filter 1.2s ease;position:relative;z-index:2}
+    #content.glitch-in img{filter:blur(8px);opacity:0}
+    #content.show img{opacity:1;filter:blur(0)}
+    h1,p{text-align:center;position:relative;z-index:2}
+    p#welcome-text-1{margin-top:15px}
+    p#welcome-text-2{margin-top:5px}
+    #sidebar-text{position:fixed;top:1rem;right:2rem;color:#fff;font-family:monospace;text-align:right;user-select:none;pointer-events:none;max-width:300px;white-space:nowrap;z-index:2}
+    #sidebar-text h2{margin:0;font-size:2.6rem;letter-spacing:.15em;text-shadow:0 0 10px #fff,0 0 20px #fff,0 0 30px #fff;color:#fff}
+    #sidebar-text p{margin:0;font-size:1.5rem;opacity:.9;letter-spacing:.25em;text-shadow:0 0 7px #fff,0 0 14px #fff,0 0 21px #fff;color:#fff}
+    .social-button{background:#333!important;color:#fff!important;border:1px solid #777!important;padding:10px 20px;cursor:pointer;font-family:monospace;font-weight:700;border-radius:5px;transition:background .3s ease,box-shadow .3s ease,color .3s ease,border-color .3s ease;text-transform:uppercase;white-space:nowrap}
+    .social-button:hover{background:#0ff!important;color:#000!important;box-shadow:0 0 10px #0ff!important;border-color:#0ff!important}
+    #content>div{margin-top:15px;display:flex;flex-direction:row;gap:15px;justify-content:center;align-items:center;flex-wrap:wrap}
+    @media (max-width:768px){
+      h1{font-size:1.5rem;margin:0 1rem}
+      p{font-size:.9rem;margin:0 1rem}
+      input[type=password]{width:80%;max-width:300px;box-sizing:border-box}
+      #sidebar-text{position:static;text-align:center;margin-top:2rem;right:auto;max-width:100%}
+      #sidebar-text h2{font-size:1.8rem}
+      #sidebar-text p{font-size:1.2rem}
+      #content img{max-width:95vw;max-height:75vh}
     }
   </style>
 </head>
 <body>
+
   <div id="background-glitch"></div>
 
   <div id="login">
     <h1>DM3.NET / LOCKED FILE #001</h1>
     <p id="login-text">Enter access key to view the content.</p>
-    <input type="password" id="password" placeholder="Access key..." />
+    <input id="password" placeholder="Access key..." type="password">
     <button onclick="checkPassword()">Unlock</button>
   </div>
 
   <div id="content">
-    <img src="https://i.imgur.com/IotT4LY.png" alt="DM3 File 001" />
+    <img alt="DM3 File 001" src="https://i.imgur.com/IotT4LY.png">
     <p id="welcome-text-1"></p>
     <p id="welcome-text-2"></p>
     <div>
-        <button id="instagram-button" class="social-button"
-                onclick="window.open('https://www.instagram.com/dm3net?igsh=MXhxaDhqdWI3MHY0bw==', '_blank')">
-            INSTAGRAM
-        </button>
-        <button id="x-button" class="social-button"
-                onclick="window.open('https://x.com/Dm1tryP4ss10n?fbclid=PAQ0xDSwLXX51leHRuA2FlQIxMQABp0hDMoLfmSB31tAOGiIqY5gCjNYNoFhmcJgfz3lrmNeQ99PQnrMb0EUOCX1y_aem_bGadCaG2vpcUvc08iOPWYw', '_blank')">
-            X (TWITTER)
-        </button>
+      <button onclick='window.open("https://www.instagram.com/dm3net?igsh=MXhxaDhqdWI3MHY0bw==","_blank")' class="social-button" id="instagram-button">INSTAGRAM</button>
+      <button onclick='window.open("https://x.com/Dm1tryP4ss10n?fbclid=PAQ0xDSwLXX51leHRuA2FlQIxMQABp0hDMoLfmSB31tAOGiIqY5gCjNYNoFhmcJgfz3lrmNeQ99PQnrMb0EUOCX1y_aem_bGadCaG2vpcUvc08iOPWYw","_blank")' class="social-button" id="x-button">X (TWITTER)</button>
     </div>
   </div>
 
@@ -298,226 +77,220 @@
     <p id="subtitle"></p>
   </div>
 
-  <script>
-    const glitchContainer = document.getElementById('background-glitch');
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}<>?/|\\';
-    const charSize = 14;
-    let glitchChars = [];
+<script>
+  const glitchContainer = document.getElementById('background-glitch');
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}<>?/|\\';
+  const charSize = 14;
+  let glitchChars = [];
 
-    const texts = {
-        title: { en: "DM3.NET", hu: "DM3.NET" }, // A cím marad mindkét nyelven DM3.NET
-        subtitle: { en: "under the surface", hu: "a felszín alatt" },
-        welcomeText1: { en: "Welcome to the depths of DM3.NET.", hu: "Üdvözöllek a DM3.NET mélyén." },
-        welcomeText2: { en: "Congratulations on successful access!", hu: "Gratulálunk a sikeres hozzáféréshez!" },
-        loginText: { en: "Enter access key to view the content.", hu: "Írd be a hozzáférési kulcsot a tartalom megtekintéséhez." }
-    };
+  const texts = {
+      title: { en: "DM3.NET", hu: "DM3.NET" },
+      subtitle: { en: "under the surface", hu: "a felszín alatt" },
+      welcomeText1: { en: "Welcome to the depths of DM3.NET.", hu: "Üdvözöllek a DM3.NET mélyén." },
+      welcomeText2: { en: "Congratulations on successful access!", hu: "Gratulálunk a sikeres hozzáféréshez!" },
+      loginText: { en: "Enter access key to view the content.", hu: "Írd be a hozzáférési kulcsot a tartalom megtekintéséhez." }
+  };
 
-    function initGlitchChars() {
-      glitchContainer.innerHTML = '';
-      glitchChars = [];
-      const cols = Math.floor(window.innerWidth / charSize);
-      const rows = Math.ceil(window.innerHeight / charSize);
-      const totalChars = cols * rows;
+  function initGlitchChars() {
+    glitchContainer.innerHTML = '';
+    glitchChars = [];
+    const cols = Math.floor(window.innerWidth / charSize);
+    const rows = Math.ceil(window.innerHeight / charSize);
+    const totalChars = cols * rows;
 
-      glitchContainer.style.width = `${cols * charSize}px`;
-      glitchContainer.style.height = `${rows * charSize}px`;
+    glitchContainer.style.width = `${cols * charSize}px`;
+    glitchContainer.style.height = `${rows * charSize}px`;
 
-      for(let i = 0; i < totalChars; i++) {
-        const span = document.createElement('span');
+    for(let i = 0; i < totalChars; i++) {
+      const span = document.createElement('span');
+      span.textContent = randomChar();
+      span.style.display = 'inline-block';
+      span.style.width = `${charSize}px`;
+      span.style.height = `${charSize}px`;
+      glitchContainer.appendChild(span);
+      glitchChars.push(span);
+    }
+  }
+
+  function randomChar() {
+    return chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  function randomGrayShade() {
+    const shades = ['#555', '#666', '#777', '#888', '#999', '#aaa', '#bbb'];
+    return shades[Math.floor(Math.random() * shades.length)];
+  }
+
+  function glitchEffect() {
+    glitchChars.forEach((span) => {
+      if (Math.random() < 0.15) {
         span.textContent = randomChar();
-        span.style.display = 'inline-block';
-        span.style.width = `${charSize}px`;
-        span.style.height = `${charSize}px`;
-        glitchContainer.appendChild(span);
-        glitchChars.push(span);
+        span.style.color = randomGrayShade();
+        span.style.transform = `translateY(${Math.random() * 5 - 2.5}px)`;
+        span.style.textShadow = Math.random() < 0.1 ? `0 0 5px #fff` : 'none';
       }
-    }
-
-    function randomChar() {
-      return chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-
-    function randomGrayShade() {
-      const shades = ['#555', '#666', '#777', '#888', '#999', '#aaa', '#bbb'];
-      return shades[Math.floor(Math.random() * shades.length)];
-    }
-
-    function glitchEffect() {
-      glitchChars.forEach((span) => {
-        if (Math.random() < 0.15) {
-          span.textContent = randomChar();
-          span.style.color = randomGrayShade();
-          span.style.transform = `translateY(${Math.random() * 5 - 2.5}px)`;
-          span.style.textShadow = Math.random() < 0.1 ? `0 0 5px #fff` : 'none';
-        }
-      });
-    }
-
-    window.addEventListener('load', () => {
-      initGlitchChars();
-      setInterval(glitchEffect, 70);
-      // A login szöveg beírása betöltéskor
-      typeText(document.getElementById('login-text'), texts.loginText.en, 50);
     });
+  }
 
-    window.addEventListener('resize', () => {
-      initGlitchChars();
-    });
+  window.addEventListener('load', () => {
+    initGlitchChars();
+    setInterval(glitchEffect, 70);
+    typeText(document.getElementById('login-text'), texts.loginText.en, 50);
+  });
 
-    function typeText(element, text, interval, callback) {
-      let i = 0;
-      element.textContent = "";
-      const glitchCharsSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  window.addEventListener('resize', () => {
+    initGlitchChars();
+  });
 
-      function step() {
-        if(i < text.length) {
-          let currentText = text.substring(0, i + 1);
+  function typeText(element, text, interval, callback) {
+    let i = 0;
+    element.textContent = "";
+    const glitchCharsSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
 
-          let glitchedText = '';
-          for (let j = 0; j < currentText.length; j++) {
-            if (Math.random() < 0.1) {
-              glitchedText += glitchCharsSet.charAt(Math.floor(Math.random() * glitchCharsSet.length));
-            } else {
-              glitchedText += currentText.charAt(j);
-            }
+    function step() {
+      if(i < text.length) {
+        let currentText = text.substring(0, i + 1);
+
+        let glitchedText = '';
+        for (let j = 0; j < currentText.length; j++) {
+          if (Math.random() < 0.1) {
+            glitchedText += glitchCharsSet.charAt(Math.floor(Math.random() * glitchCharsSet.length));
+          } else {
+            glitchedText += currentText.charAt(j);
           }
-          element.textContent = glitchedText;
-
-          i++;
-          setTimeout(step, interval);
-        } else {
-          element.textContent = text;
-          if(callback) callback();
         }
+        element.textContent = glitchedText;
+
+        i++;
+        setTimeout(step, interval);
+      } else {
+        element.textContent = text;
+        if(callback) callback();
       }
-      step();
     }
+    step();
+  }
 
-    function glitchButtonText(buttonElement, originalText) {
-        let count = 0;
-        const maxGlitchDuration = 10;
-        const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  function glitchButtonText(buttonElement, originalText) {
+      let count = 0;
+      const maxGlitchDuration = 10;
+      const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
 
-        const interval = setInterval(() => {
-            if (count >= maxGlitchDuration) {
-                clearInterval(interval);
-                buttonElement.textContent = originalText;
-                return;
-            }
+      const interval = setInterval(() => {
+          if (count >= maxGlitchDuration) {
+              clearInterval(interval);
+              buttonElement.textContent = originalText;
+              return;
+          }
 
-            let glitched = originalText.split('').map((char) =>
-                Math.random() < 0.3 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : char
-            ).join('');
-            buttonElement.textContent = glitched;
-            count++;
-        }, 50);
-    }
+          let glitched = originalText.split('').map((char) =>
+              Math.random() < 0.3 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : char
+          ).join('');
+          buttonElement.textContent = glitched;
+          count++;
+      }, 50);
+  }
 
-    // Módosított glitchText a nyelvi váltáshoz
-    function glitchText(element, textKey) {
-        const originalText = texts[textKey].en;
-        const glitchedTextLang = texts[textKey].hu; // A magyar változat lesz a glitchelő
-        const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-        let count = 0;
-        const max = 20; // Hosszabb glitch idő
+  function glitchText(element, textKey) {
+      const originalText = texts[textKey].en;
+      const glitchedTextLang = texts[textKey].hu;
+      const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+      let count = 0;
+      const max = 20;
 
-        const interval = setInterval(() => {
-            // Váltás a magyar szövegre a glitch során
-            let currentSourceText = (count < max / 2 && Math.random() < 0.5) ? glitchedTextLang : originalText;
+      const interval = setInterval(() => {
+          let currentSourceText = (count < max / 2 && Math.random() < 0.5) ? glitchedTextLang : originalText;
 
-            const glitched = currentSourceText.split('').map((char) =>
-                Math.random() < 0.2 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : char
-            ).join('');
-            element.textContent = glitched;
-            count++;
-            if (count >= max) {
-                clearInterval(interval);
-                element.textContent = originalText; // Visszaáll angolra
-            }
-        }, 80);
-    }
+          const glitched = currentSourceText.split('').map((char) =>
+              Math.random() < 0.2 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : char
+          ).join('');
+          element.textContent = glitched;
+          count++;
+          if (count >= max) {
+              clearInterval(interval);
+              element.textContent = originalText;
+          }
+      }, 80);
+  }
 
+  function startGlitchLoop() {
+    const titleEl = document.getElementById('title');
+    const subtitleEl = document.getElementById('subtitle');
+    const welcomeText1 = document.getElementById('welcome-text-1');
+    const welcomeText2 = document.getElementById('welcome-text-2');
 
-    function startGlitchLoop() {
-      const titleEl = document.getElementById('title');
-      const subtitleEl = document.getElementById('subtitle');
-      const welcomeText1 = document.getElementById('welcome-text-1');
-      const welcomeText2 = document.getElementById('welcome-text-2');
+    typeText(titleEl, texts.title.en, 120);
+    typeText(subtitleEl, texts.subtitle.en, 140);
+    typeText(welcomeText1, texts.welcomeText1.en, 100);
+    typeText(welcomeText2, texts.welcomeText2.en, 100);
 
-      // Indításkor az angol szövegek jelennek meg
-      typeText(titleEl, texts.title.en, 120);
-      typeText(subtitleEl, texts.subtitle.en, 140);
-      typeText(welcomeText1, texts.welcomeText1.en, 100);
-      typeText(welcomeText2, texts.welcomeText2.en, 100);
+    setInterval(() => {
+      if (Math.random() < 0.4) {
+        glitchText(subtitleEl, 'subtitle');
+      }
+      if (Math.random() < 0.3) {
+        glitchText(welcomeText1, 'welcomeText1');
+      }
+      if (Math.random() < 0.3) {
+        glitchText(welcomeText2, 'welcomeText2');
+      }
+    }, 4000 + Math.random() * 3000);
+  }
 
+  function showContentWithAnimation() {
+    const loginSection = document.getElementById('login');
+    const content = document.getElementById('content');
+    const backgroundGlitch = document.getElementById('background-glitch');
+    const instagramButton = document.getElementById('instagram-button');
+    const xButton = document.getElementById('x-button');
 
-      // A glitch loop, ami véletlenszerűen aktiválja a nyelvi glitchet
-      setInterval(() => {
-        if (Math.random() < 0.4) { // 40% esély a glitchre
-          glitchText(subtitleEl, 'subtitle');
-        }
-        if (Math.random() < 0.3) { // 30% esély a glitchre
-          glitchText(welcomeText1, 'welcomeText1');
-        }
-        if (Math.random() < 0.3) { // 30% esély a glitchre
-          glitchText(welcomeText2, 'welcomeText2');
-        }
-      }, 4000 + Math.random() * 3000); // 4-7 másodpercenként
-    }
+    loginSection.classList.add('hide');
+    backgroundGlitch.style.opacity = '0';
 
-    function showContentWithAnimation() {
-      const loginSection = document.getElementById('login');
-      const content = document.getElementById('content');
-      const backgroundGlitch = document.getElementById('background-glitch');
-      const instagramButton = document.getElementById('instagram-button');
-      const xButton = document.getElementById('x-button');
+    setTimeout(() => {
+      loginSection.style.display = 'none';
+      backgroundGlitch.style.display = 'none';
 
-      loginSection.classList.add('hide');
-      backgroundGlitch.style.opacity = '0';
+      content.classList.add('glitch-in');
 
       setTimeout(() => {
-        loginSection.style.display = 'none';
-        backgroundGlitch.style.display = 'none';
+        content.classList.remove('glitch-in');
+        content.classList.add('show');
 
-        content.classList.add('glitch-in');
+        startGlitchLoop();
 
-        setTimeout(() => {
-          content.classList.remove('glitch-in');
-          content.classList.add('show');
+        instagramButton.textContent = "INSTAGRAM";
+        xButton.textContent = "X (TWITTER)";
 
-          startGlitchLoop(); // A nyelvi glitch loop elindítása
+        instagramButton.addEventListener('mouseover', function() {
+            glitchButtonText(this, "INSTAGRAM");
+        });
+        xButton.addEventListener('mouseover', function() {
+            glitchButtonText(this, "X (TWITTER)");
+        });
 
-          instagramButton.textContent = "INSTAGRAM";
-          xButton.textContent = "X (TWITTER)";
+      }, 500);
 
-          instagramButton.addEventListener('mouseover', function() {
-              glitchButtonText(this, "INSTAGRAM");
-          });
-          xButton.addEventListener('mouseover', function() {
-              glitchButtonText(this, "X (TWITTER)");
-          });
+    }, 1000);
+  }
 
-        }, 500);
-
-      }, 1000);
+  function checkPassword() {
+    const input = document.getElementById("password");
+    const correctPassword = "IXI-808-D3.010N";
+    if (input.value === correctPassword) {
+      showContentWithAnimation();
+    } else {
+      input.classList.add("shake");
+      setTimeout(() => input.classList.remove("shake"), 500);
     }
+  }
 
-    function checkPassword() {
-      const input = document.getElementById("password");
-      const correctPassword = "IXI-808-D3.010N";
-      if (input.value === correctPassword) {
-        showContentWithAnimation();
-      } else {
-        input.classList.add("shake");
-        setTimeout(() => input.classList.remove("shake"), 500);
-      }
+  document.getElementById('password').addEventListener('keydown', function(e) {
+    if(e.key === 'Enter') {
+      checkPassword();
     }
+  });
+</script>
 
-    document.getElementById('password').addEventListener('keydown', function(e) {
-      if(e.key === 'Enter') {
-        checkPassword();
-      }
-    });
-  </script>
 </body>
 </html>
